@@ -1,0 +1,47 @@
+# Базовый образ с Python 
+FROM python:3.11-slim
+
+
+
+
+
+# Установка зависимостей для Oracle Instant Client
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    libaio1t64 \
+    unzip \
+    curl \
+    telnet \
+    iputils-ping \
+    && rm -rf /var/lib/apt/lists/*
+
+# Создаем симлинк для совместимости
+RUN ln -sf /usr/lib/x86_64-linux-gnu/libaio.so.1t64 /usr/lib/x86_64-linux-gnu/libaio.so.1
+
+# Скачиваем и устанавливаем Instant Client Basic с отключенной проверкой SSL
+RUN curl -k -L -o /tmp/instantclient-basic.zip \
+    https://download.oracle.com/otn_software/linux/instantclient/2390000/instantclient-basic-linux.x64-23.9.0.25.07.zip \
+    && unzip /tmp/instantclient-basic.zip -d /opt/oracle \
+    && rm /tmp/instantclient-basic.zip
+
+# Правильное имя директории (23.9, а не 21_13)
+ENV LD_LIBRARY_PATH=/opt/oracle/instantclient_23_9:$LD_LIBRARY_PATH
+ENV PATH=/opt/oracle/instantclient_23_9:$PATH
+
+
+
+
+
+
+
+# Копируем исходники
+WORKDIR /app
+COPY src/ .
+
+# Установка Python-зависимостей
+RUN pip install --no-cache-dir -r requirements.txt
+
+EXPOSE 5000
+
+# Запуск Python-кода
+CMD ["python", "db_caller.py"]
+

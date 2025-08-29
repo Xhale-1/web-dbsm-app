@@ -1,0 +1,22 @@
+services:
+  api:
+    build:
+      context: ./api
+    ports:
+      - "5001:5001"
+    networks:
+      - webapp-net
+
+  db_caller:
+    build: 
+      context: ./services/db_caller
+    ports: 
+      - "5000:5000"
+    networks:
+      - webapp-net
+
+
+networks:
+  webapp-net:
+    driver: bridge
+
