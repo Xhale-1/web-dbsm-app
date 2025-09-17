@@ -72,6 +72,11 @@ def devs():
     return data
 
 
+# @app.get("/ex")
+# def end3():
+#     return {"my_leila_sing_like:":"lalalaalla"}
+
+
 
 if __name__ == "__main__":
     uvicorn.run(app, host="0.0.0.0", port = 5000)
